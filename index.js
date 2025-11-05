@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const curweek = document.getElementsById("week");
+    const curweek = document.getElementById("week"); // Исправлено: getElementById
 
     const startDate = new Date('2025-09-01');
 
