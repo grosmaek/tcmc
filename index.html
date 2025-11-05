@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расписание занятий</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #4b6cb7, #182848);
+            color: white;
+            padding: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+        }
+
+        .week-indicator {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .week-type-selector {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .week-btn {
+            padding: 10px 25px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .numerator-btn {
+            background-color: #4b6cb7;
+            color: white;
+        }
+
+        .denominator-btn {
+            background-color: #182848;
+            color: white;
+        }
+
+        .week-btn.active {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .schedule-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .schedule-header {
+            display: grid;
+            grid-template-columns: 80px repeat(5, 1fr);
+            background-color: #4b6cb7;
+            color: white;
+            font-weight: bold;
+        }
+
+        .schedule-header div {
+            padding: 15px 10px;
+            text-align: center;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .schedule-header div:last-child {
+            border-right: none;
+        }
+
+        .schedule-body {
+            display: grid;
+            grid-template-columns: 80px repeat(5, 1fr);
+        }
+
+        .time-slot {
+            background-color: #f0f4f8;
+            padding: 15px 10px;
+            text-align: center;
+            font-weight: bold;
+            border-bottom: 1px solid #e1e8f0;
+            border-right: 1px solid #e1e8f0;
+        }
+
+        .lesson-slot {
+            padding: 15px 10px;
+            border-bottom: 1px solid #e1e8f0;
+            border-right: 1px solid #e1e8f0;
+            min-height: 80px;
+        }
+
+        .lesson-slot:last-child {
+            border-right: none;
+        }
+
+        .lesson {
+            background-color: #e8f4ff;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #4b6cb7;
+            margin-bottom: 10px;
+        }
+
+        .lesson:last-child {
+            margin-bottom: 0;
+        }
+
+        .lesson-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .lesson-info {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .numerator-lesson {
+            border-left-color: #4b6cb7;
+        }
+
+        .denominator-lesson {
+            border-left-color: #182848;
+        }
+
+        .current-date {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #666;
+            border-top: 1px solid #e1e8f0;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .week-indicator {
+                margin-top: 15px;
+            }
+            
+            .schedule-header, .schedule-body {
+                grid-template-columns: 60px repeat(5, 1fr);
+            }
+            
+            .time-slot, .lesson-slot {
+                padding: 10px 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div>
+                    <h1>Расписание занятий</h1>
+                    <p>Колледж информационных технологий</p>
+                </div>
+                <div class="week-indicator" id="weekIndicator">
+                    Неделя: <span id="currentWeek">числитель</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="current-date" id="currentDate">
+            <!-- Здесь будет текущая дата -->
+        </div>
+
+        <div class="week-type-selector">
+            <button class="week-btn numerator-btn active" id="numeratorBtn">Числитель</button>
+            <button class="week-btn denominator-btn" id="denominatorBtn">Знаменатель</button>
+        </div>
+
+        <div class="schedule-container">
+            <div class="schedule-header">
+                <div>Время</div>
+                <div>Понедельник</div>
+                <div>Вторник</div>
+                <div>Среда</div>
+                <div>Четверг</div>
+                <div>Пятница</div>
+            </div>
+            <div class="schedule-body">
+                <!-- Первая пара -->
+                <div class="time-slot">09:00-10:30</div>
+                <div class="lesson-slot">
+                    <div class="lesson numerator-lesson">
+                        <div class="lesson-name">Математика</div>
+                        <div class="lesson-info">Ауд. 301, Преп. Иванов</div>
+                    </div>
+                </div>
+                <div class="lesson-slot">
+                    <div class="lesson numerator-lesson">
+                        <div class="lesson-name">Физика</div>
+                        <div class="lesson-info">Ауд. 215, Преп. Петрова</div>
+                    </div>
+                </div>
+                <div class="lesson-slot">
+                    <div class="lesson denominator-lesson">
+                        <div class="lesson-name">Программирование</div>
+                        <div class="lesson-info">Ауд. 105, Преп. Сидоров</div>
+                    </div>
+                </div>
+                <div class="lesson-slot">
+                    <div class="lesson numerator-lesson">
+                        <div class="lesson-name">Базы данных</div>
+                        <div class="lesson-info">Ауд. 410, Преп. Кузнецов</div>
+                    </div>
+                </div>
+                <div class="lesson-slot">
+                    <div class="lesson denominator-lesson">
+                        <div class="lesson-name">Веб-разработка</div>
+                        <div class="lesson-info">Ауд. 312, Преп. Смирнов</div>
+                    </div>
+                </div>
+
+                <!-- Вторая пара -->
+                <div class="time-slot">10:45-12:15</div>
+                <div class="lesson-slot">
+                    <div class="lesson denominator-lesson">
+                        <div class="lesson-name">Информатика</div>
+                        <div class="lesson-info">Ауд. 205, Преп. Федоров</div>
+                    </div>
+                </div>
+                <div class="lesson-slot">
+                    <div class="lesson numerator-lesson">
+                        <div class="lesson-name">Алгоритмы</div>
+                        <div class="lesson-info">Ауд. 108, Преп. Николаев</div>
+                    </div>
+                </div>
+                <div class="lesson-slot">
+                    <div class="lesson numerator-lesson">
+                        <div class="lesson-name">Сети</div>
+                        <div class="lesson-info">Ауд. 315, Преп. Васильев</div>
+                    </div>
+                </div>
+                <div class="lesson-slot">
+                    <div class="lesson denominator-lesson">
+                        <div class="lesson-name">ООП</div>
+                        <div class="lesson-info">Ауд. 209, Преп. Павлов</div>
+                    </div>
+                </div>
+                <div class="lesson-slot">
+                    <div class="lesson numerator-lesson">
+                        <div class="lesson-name">Математика</div>
+                        <div class="lesson-info">Ауд. 301, Преп. Иванов</div>
+                    </div>
+                </div>
+
+                <!-- Третья пара -->
+                <div class="time-slot">13:00-14:30</div>
+                <div class="lesson-slot">
+                    <div class="lesson numerator-lesson">
+                        <div class="lesson-name">Иностранный язык</div>
+                        <div class="lesson-info">Ауд. 102, Преп. Козлова</div>
+                    </div>
+                </div>
+                <div class="lesson-slot">
+                    <div class="lesson denominator-lesson">
+                        <div class="lesson-name">Физкультура</div>
+                        <div class="lesson-info">Спортзал, Преп. Орлов</div>
+                    </div>
+                </div>
+                <div class="lesson-slot">
+                    <div class="lesson denominator-lesson">
+                        <div class="lesson-name">Экономика</div>
+                        <div class="lesson-info">Ауд. 401, Преп. Зайцева</div>
+                    </div>
+                </div>
+                <div class="lesson-slot">
+                    <div class="lesson numerator-lesson">
+                        <div class="lesson-name">Архитектура ПК</div>
+                        <div class="lesson-info">Ауд. 305, Преп. Лебедев</div>
+                    </div>
+                </div>
+                <div class="lesson-slot">
+                    <div class="lesson denominator-lesson">
+                        <div class="lesson-name">Теория вероятностей</div>
+                        <div class="lesson-info">Ауд. 210, Преп. Соколова</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Расписание обновляется автоматически • Колледж информационных технологий © 2023</p>
+        </footer>
+    </div>
+
+    <script>
+        // Простой скрипт для демонстрации переключения недель
+        document.addEventListener('DOMContentLoaded', function() {
+            const numeratorBtn = document.getElementById('numeratorBtn');
+            const denominatorBtn = document.getElementById('denominatorBtn');
+            const currentWeek = document.getElementById('currentWeek');
+            const currentDate = document.getElementById('currentDate');
+            
+            // Установка текущей даты
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            currentDate.textContent = now.toLocaleDateString('ru-RU', options);
+            
+            // Функция переключения на числитель
+            numeratorBtn.addEventListener('click', function() {
+                currentWeek.textContent = 'числитель';
+                numeratorBtn.classList.add('active');
+                denominatorBtn.classList.remove('active');
+                
+                // Здесь будет логика показа занятий для числителя
+                document.querySelectorAll('.numerator-lesson').forEach(el => {
+                    el.style.display = 'block';
+                });
+                document.querySelectorAll('.denominator-lesson').forEach(el => {
+                    el.style.display = 'none';
+                });
+            });
+            
+            // Функция переключения на знаменатель
+            denominatorBtn.addEventListener('click', function() {
+                currentWeek.textContent = 'знаменатель';
+                denominatorBtn.classList.add('active');
+                numeratorBtn.classList.remove('active');
+                
+                // Здесь будет логика показа занятий для знаменателя
+                document.querySelectorAll('.numerator-lesson').forEach(el => {
+                    el.style.display = 'none';
+                });
+                document.querySelectorAll('.denominator-lesson').forEach(el => {
+                    el.style.display = 'block';
+                });
+            });
+            
+            // Изначально показываем числитель
+            numeratorBtn.click();
+        });
+    </script>
+</body>
+</html>
