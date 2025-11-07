@@ -3,19 +3,588 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Расписание ТКУИК</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <title>Расписание занятий</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .week-selector {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background-color: #fff;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .week-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            padding: 8px 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .nav-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .current-week {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #2c3e50;
+        }
+
+        .week-type {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .numerator {
+            background-color: #e8f4ff;
+            color: #3498db;
+        }
+
+        .denominator {
+            background-color: #fff0e1;
+            color: #e67e22;
+        }
+
+        .schedule {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .day-header {
+            background-color: #3498db;
+            color: white;
+            padding: 15px 20px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .lessons-list {
+            padding: 0;
+        }
+
+        .lesson {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .lesson:last-child {
+            border-bottom: none;
+        }
+
+        .lesson-time {
+            font-weight: bold;
+            color: #3498db;
+            min-width: 120px;
+        }
+
+        .lesson-info {
+            flex-grow: 1;
+        }
+
+        .lesson-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+
+        .lesson-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .lesson-type {
+            background-color: #e8f4ff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .lecture {
+            background-color: #e8f4ff;
+            color: #3498db;
+        }
+
+        .practice {
+            background-color: #fff8e1;
+            color: #f39c12;
+        }
+
+        .lab {
+            background-color: #e8f5e9;
+            color: #27ae60;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #7f8c8d;
+        }
+
+        .empty-day {
+            padding: 30px;
+            text-align: center;
+            color: #95a5a6;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .week-selector {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .lesson {
+                flex-direction: column;
+            }
+            
+            .lesson-time {
+                margin-bottom: 5px;
+            }
+            
+            .lesson-details {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Расписание</h1>
-            <p id="week">?</p>
+            <h1>Расписание занятий</h1>
+            <p>Колледж информационных технологий • Группа ИС-21</p>
         </header>
+
+        <div class="week-selector">
+            <div class="week-nav">
+                <button class="nav-btn" id="prev-week">← Предыдущая неделя</button>
+                <button class="nav-btn" id="current-week">Текущая неделя</button>
+                <button class="nav-btn" id="next-week">Следующая неделя →</button>
+            </div>
+            <div class="current-week" id="week-range">
+                <!-- Здесь будет отображаться диапазон дат -->
+            </div>
+        </div>
+
+        <div class="schedule" id="schedule">
+            <!-- Расписание будет загружено динамически -->
+        </div>
+
+        <footer>
+            <p>Расписание обновляется автоматически • Колледж информационных технологий</p>
+        </footer>
     </div>
-    <script src="index.js"></script>
+
+    <script>
+        // База данных расписания в формате JSON
+        const scheduleData = {
+            "numerator": {
+                "monday": [
+                    {
+                        "time": "09:00 - 10:30",
+                        "name": "Математический анализ",
+                        "type": "lecture",
+                        "room": "Аудитория 301",
+                        "teacher": "Проф. Иванов А.В."
+                    },
+                    {
+                        "time": "10:45 - 12:15",
+                        "name": "Программирование на Python",
+                        "type": "practice",
+                        "room": "Компьютерный класс 105",
+                        "teacher": "Доц. Сидоров П.К."
+                    },
+                    {
+                        "time": "13:30 - 15:00",
+                        "name": "Базы данных",
+                        "type": "lab",
+                        "room": "Компьютерный класс 210",
+                        "teacher": "Ст. преп. Кузнецов М.П."
+                    }
+                ],
+                "tuesday": [
+                    {
+                        "time": "09:00 - 10:30",
+                        "name": "Архитектура ЭВМ",
+                        "type": "lecture",
+                        "room": "Аудитория 215",
+                        "teacher": "Проф. Петрова С.И."
+                    },
+                    {
+                        "time": "10:45 - 12:15",
+                        "name": "Веб-технологии",
+                        "type": "practice",
+                        "room": "Компьютерный класс 312",
+                        "teacher": "Доц. Смирнов А.А."
+                    }
+                ],
+                "wednesday": [
+                    {
+                        "time": "09:00 - 10:30",
+                        "name": "Иностранный язык",
+                        "type": "practice",
+                        "room": "Аудитория 102",
+                        "teacher": "Преп. Козлова Е.В."
+                    },
+                    {
+                        "time": "10:45 - 12:15",
+                        "name": "Сети и коммуникации",
+                        "type": "lecture",
+                        "room": "Аудитория 315",
+                        "teacher": "Проф. Васильев И.С."
+                    },
+                    {
+                        "time": "13:30 - 15:00",
+                        "name": "Физкультура",
+                        "type": "practice",
+                        "room": "Спортивный зал",
+                        "teacher": "Преп. Орлов Д.Н."
+                    }
+                ],
+                "thursday": [
+                    {
+                        "time": "09:00 - 10:30",
+                        "name": "Алгоритмы и структуры данных",
+                        "type": "lecture",
+                        "room": "Аудитория 108",
+                        "teacher": "Проф. Николаев С.П."
+                    },
+                    {
+                        "time": "10:45 - 12:15",
+                        "name": "Операционные системы",
+                        "type": "lab",
+                        "room": "Компьютерный класс 305",
+                        "teacher": "Доц. Лебедев А.М."
+                    }
+                ],
+                "friday": [
+                    {
+                        "time": "09:00 - 10:30",
+                        "name": "Теория вероятностей",
+                        "type": "lecture",
+                        "room": "Аудитория 210",
+                        "teacher": "Доц. Соколова О.И."
+                    },
+                    {
+                        "time": "10:45 - 12:15",
+                        "name": "Объектно-ориентированное программирование",
+                        "type": "practice",
+                        "room": "Компьютерный класс 312",
+                        "teacher": "Доц. Смирнов А.А."
+                    }
+                ],
+                "saturday": [],
+                "sunday": []
+            },
+            "denominator": {
+                "monday": [
+                    {
+                        "time": "09:00 - 10:30",
+                        "name": "Дискретная математика",
+                        "type": "lecture",
+                        "room": "Аудитория 301",
+                        "teacher": "Проф. Иванов А.В."
+                    },
+                    {
+                        "time": "10:45 - 12:15",
+                        "name": "Программирование на C++",
+                        "type": "practice",
+                        "room": "Компьютерный класс 105",
+                        "teacher": "Доц. Сидоров П.К."
+                    }
+                ],
+                "tuesday": [
+                    {
+                        "time": "09:00 - 10:30",
+                        "name": "Компьютерные сети",
+                        "type": "lecture",
+                        "room": "Аудитория 215",
+                        "teacher": "Проф. Петрова С.И."
+                    },
+                    {
+                        "time": "10:45 - 12:15",
+                        "name": "Веб-дизайн",
+                        "type": "practice",
+                        "room": "Компьютерный класс 312",
+                        "teacher": "Доц. Смирнов А.А."
+                    },
+                    {
+                        "time": "13:30 - 15:00",
+                        "name": "Базы данных",
+                        "type": "lab",
+                        "room": "Компьютерный класс 210",
+                        "teacher": "Ст. преп. Кузнецов М.П."
+                    }
+                ],
+                "wednesday": [
+                    {
+                        "time": "09:00 - 10:30",
+                        "name": "Иностранный язык",
+                        "type": "practice",
+                        "room": "Аудитория 102",
+                        "teacher": "Преп. Козлова Е.В."
+                    },
+                    {
+                        "time": "10:45 - 12:15",
+                        "name": "Криптография",
+                        "type": "lecture",
+                        "room": "Аудитория 315",
+                        "teacher": "Проф. Васильев И.С."
+                    }
+                ],
+                "thursday": [
+                    {
+                        "time": "09:00 - 10:30",
+                        "name": "Машинное обучение",
+                        "type": "lecture",
+                        "room": "Аудитория 108",
+                        "teacher": "Проф. Николаев С.П."
+                    },
+                    {
+                        "time": "10:45 - 12:15",
+                        "name": "Операционные системы",
+                        "type": "lab",
+                        "room": "Компьютерный класс 305",
+                        "teacher": "Доц. Лебедев А.М."
+                    }
+                ],
+                "friday": [
+                    {
+                        "time": "09:00 - 10:30",
+                        "name": "Статистика",
+                        "type": "lecture",
+                        "room": "Аудитория 210",
+                        "teacher": "Доц. Соколова О.И."
+                    },
+                    {
+                        "time": "10:45 - 12:15",
+                        "name": "Проектирование ПО",
+                        "type": "practice",
+                        "room": "Компьютерный класс 312",
+                        "teacher": "Доц. Смирнов А.А."
+                    }
+                ],
+                "saturday": [],
+                "sunday": []
+            }
+        };
+
+        // Названия дней недели на русском
+        const dayNames = {
+            "monday": "Понедельник",
+            "tuesday": "Вторник",
+            "wednesday": "Среда",
+            "thursday": "Четверг",
+            "friday": "Пятница",
+            "saturday": "Суббота",
+            "sunday": "Воскресенье"
+        };
+
+        // Текущая дата и смещение недели
+        let currentWeekOffset = 0;
+
+        // Функция для определения текущей недели (числитель/знаменатель)
+        function getCurrentWeekType(date = new Date()) {
+            const startDate = new Date('2024-09-02'); // Дата начала учебного года (понедельник)
+            const today = date;
+            
+            // Вычисляем разницу в неделях
+            const timeDiff = today - startDate;
+            const weeksDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24 * 7));
+            
+            // Четная неделя = числитель, нечетная = знаменатель
+            return weeksDiff % 2 === 0 ? 'numerator' : 'denominator';
+        }
+
+        // Функция для получения дат текущей недели (пн-вс)
+        function getCurrentWeekDates(offset = 0) {
+            const now = new Date();
+            const currentDay = now.getDay(); // 0 - воскресенье, 1 - понедельник, ...
+            
+            // Вычисляем понедельник текущей недели
+            const monday = new Date(now);
+            monday.setDate(now.getDate() - (currentDay === 0 ? 6 : currentDay - 1));
+            
+            // Применяем смещение недели
+            monday.setDate(monday.getDate() + (offset * 7));
+            
+            // Создаем массив дат недели
+            const weekDates = [];
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(monday);
+                date.setDate(monday.getDate() + i);
+                weekDates.push(date);
+            }
+            
+            return weekDates;
+        }
+
+        // Функция для форматирования даты
+        function formatDate(date) {
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            return date.toLocaleDateString('ru-RU', options);
+        }
+
+        // Функция для форматирования даты для заголовка недели
+        function formatWeekRange(dates) {
+            const first = dates[0];
+            const last = dates[6];
+            return `${formatDate(first)} - ${formatDate(last)}`;
+        }
+
+        // Функция для отображения расписания
+        function renderSchedule(weekOffset = 0) {
+            const scheduleElement = document.getElementById('schedule');
+            const weekDates = getCurrentWeekDates(weekOffset);
+            const weekType = getCurrentWeekType(weekDates[0]); // Определяем тип недели по понедельнику
+            const weekData = scheduleData[weekType];
+            
+            // Очищаем контейнер расписания
+            scheduleElement.innerHTML = '';
+            
+            // Обновляем заголовок недели
+            const weekRangeElement = document.getElementById('week-range');
+            weekRangeElement.innerHTML = `${formatWeekRange(weekDates)} <span class="week-type ${weekType === 'numerator' ? 'numerator' : 'denominator'}" id="week-type">${weekType === 'numerator' ? 'числитель' : 'знаменатель'}</span>`;
+            
+            // Создаем HTML для каждого дня
+            const dayKeys = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+            
+            dayKeys.forEach((dayKey, index) => {
+                const dayElement = document.createElement('div');
+                const date = weekDates[index];
+                
+                // Заголовок дня
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'day-header';
+                dayHeader.textContent = `${dayNames[dayKey]}, ${formatDate(date)}`;
+                dayElement.appendChild(dayHeader);
+                
+                // Список занятий
+                const lessonsList = document.createElement('div');
+                lessonsList.className = 'lessons-list';
+                
+                const lessons = weekData[dayKey] || [];
+                
+                if (lessons.length === 0) {
+                    const emptyDay = document.createElement('div');
+                    emptyDay.className = 'empty-day';
+                    emptyDay.textContent = 'Занятий нет';
+                    lessonsList.appendChild(emptyDay);
+                } else {
+                    lessons.forEach(lesson => {
+                        const lessonElement = document.createElement('div');
+                        lessonElement.className = 'lesson';
+                        
+                        lessonElement.innerHTML = `
+                            <div class="lesson-time">${lesson.time}</div>
+                            <div class="lesson-info">
+                                <div class="lesson-name">${lesson.name}</div>
+                                <div class="lesson-details">
+                                    <span class="lesson-type ${lesson.type}">${getTypeText(lesson.type)}</span>
+                                    <span>${lesson.room}</span>
+                                    <span>${lesson.teacher}</span>
+                                </div>
+                            </div>
+                        `;
+                        
+                        lessonsList.appendChild(lessonElement);
+                    });
+                }
+                
+                dayElement.appendChild(lessonsList);
+                scheduleElement.appendChild(dayElement);
+            });
+        }
+
+        // Вспомогательная функция для получения текста типа занятия
+        function getTypeText(type) {
+            const typeMap = {
+                'lecture': 'Лекция',
+                'practice': 'Практика',
+                'lab': 'Лабораторная'
+            };
+            return typeMap[type] || type;
+        }
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            // Отображаем расписание текущей недели
+            renderSchedule(currentWeekOffset);
+            
+            // Назначаем обработчики для кнопок
+            document.getElementById('prev-week').addEventListener('click', function() {
+                currentWeekOffset--;
+                renderSchedule(currentWeekOffset);
+            });
+            
+            document.getElementById('current-week').addEventListener('click', function() {
+                currentWeekOffset = 0;
+                renderSchedule(currentWeekOffset);
+            });
+            
+            document.getElementById('next-week').addEventListener('click', function() {
+                currentWeekOffset++;
+                renderSchedule(currentWeekOffset);
+            });
+        });
+    </script>
 </body>
 </html>
