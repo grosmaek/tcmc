@@ -12,10 +12,39 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        :root {
+            --bg-color: #f8f9fa;
+            --text-color: #333;
+            --card-bg: #fff;
+            --header-bg: #3498db;
+            --header-text: white;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --border-color: #eaeaea;
+            --lesson-bg: #fff;
+            --time-color: #3498db;
+            --empty-day-color: #95a5a6;
+            --footer-color: #7f8c8d;
+        }
+
+        .dark-theme {
+            --bg-color: #1a1a1a;
+            --text-color: #e0e0e0;
+            --card-bg: #2d2d2d;
+            --header-bg: #1e3a5f;
+            --header-text: #e0e0e0;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            --border-color: #444;
+            --lesson-bg: #3d3d3d;
+            --time-color: #5dade2;
+            --empty-day-color: #777;
+            --footer-color: #aaa;
+        }
+
         body {
-            background-color: #f8f9fa;
-            color: #333;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .container {
@@ -25,18 +54,30 @@
         }
 
         header {
-            background-color: #fff;
+            background-color: var(--card-bg);
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow);
             margin-bottom: 20px;
             text-align: center;
+            position: relative;
         }
 
         h1 {
             font-size: 1.8rem;
             margin-bottom: 10px;
-            color: #2c3e50;
+            color: var(--text-color);
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--text-color);
         }
 
         .week-selector {
@@ -44,10 +85,10 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            background-color: #fff;
+            background-color: var(--card-bg);
             padding: 15px 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow);
         }
 
         .week-nav {
@@ -57,8 +98,8 @@
 
         .nav-btn {
             padding: 8px 15px;
-            background-color: #3498db;
-            color: white;
+            background-color: var(--header-bg);
+            color: var(--header-text);
             border: none;
             border-radius: 4px;
             cursor: pointer;
@@ -67,13 +108,13 @@
         }
 
         .nav-btn:hover {
-            background-color: #2980b9;
+            opacity: 0.9;
         }
 
         .current-week {
             font-weight: bold;
             font-size: 1.1rem;
-            color: #2c3e50;
+            color: var(--text-color);
         }
 
         .week-type {
@@ -89,25 +130,35 @@
             color: #3498db;
         }
 
+        .dark-theme .numerator {
+            background-color: #1e3a5f;
+            color: #5dade2;
+        }
+
         .denominator {
             background-color: #fff0e1;
             color: #e67e22;
         }
 
+        .dark-theme .denominator {
+            background-color: #5c3d1e;
+            color: #f39c12;
+        }
+
         .schedule {
-            background-color: #fff;
+            background-color: var(--card-bg);
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow);
             overflow: hidden;
         }
 
         .day-header {
-            background-color: #3498db;
-            color: white;
+            background-color: var(--header-bg);
+            color: var(--header-text);
             padding: 15px 20px;
             font-weight: bold;
             font-size: 1.2rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .lessons-list {
@@ -116,9 +167,10 @@
 
         .lesson {
             padding: 15px 20px;
-            border-bottom: 1px solid #f0f0f0;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             flex-wrap: wrap;
+            background-color: var(--lesson-bg);
         }
 
         .lesson:last-child {
@@ -127,7 +179,7 @@
 
         .lesson-time {
             font-weight: bold;
-            color: #3498db;
+            color: var(--time-color);
             min-width: 120px;
         }
 
@@ -138,7 +190,7 @@
         .lesson-name {
             font-weight: bold;
             margin-bottom: 5px;
-            color: #2c3e50;
+            color: var(--text-color);
         }
 
         .lesson-details {
@@ -146,42 +198,21 @@
             flex-wrap: wrap;
             gap: 15px;
             font-size: 0.9rem;
-            color: #666;
-        }
-
-        .lesson-type {
-            background-color: #e8f4ff;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-        }
-
-        .lecture {
-            background-color: #e8f4ff;
-            color: #3498db;
-        }
-
-        .practice {
-            background-color: #fff8e1;
-            color: #f39c12;
-        }
-
-        .lab {
-            background-color: #e8f5e9;
-            color: #27ae60;
+            color: var(--text-color);
+            opacity: 0.8;
         }
 
         footer {
             text-align: center;
             margin-top: 30px;
             padding: 20px;
-            color: #7f8c8d;
+            color: var(--footer-color);
         }
 
         .empty-day {
             padding: 30px;
             text-align: center;
-            color: #95a5a6;
+            color: var(--empty-day-color);
             font-style: italic;
         }
 
@@ -203,6 +234,11 @@
                 flex-direction: column;
                 gap: 5px;
             }
+            
+            .theme-toggle {
+                position: static;
+                margin-top: 10px;
+            }
         }
     </style>
 </head>
@@ -211,6 +247,7 @@
         <header>
             <h1>Расписание занятий</h1>
             <p>Колледж информационных технологий • Группа ИС-21</p>
+            <button class="theme-toggle" id="themeToggle">🌙</button>
         </header>
 
         <div class="week-selector">
@@ -241,21 +278,18 @@
                     {
                         "time": "09:00 - 10:30",
                         "name": "Математический анализ",
-                        "type": "lecture",
                         "room": "Аудитория 301",
                         "teacher": "Проф. Иванов А.В."
                     },
                     {
                         "time": "10:45 - 12:15",
                         "name": "Программирование на Python",
-                        "type": "practice",
                         "room": "Компьютерный класс 105",
                         "teacher": "Доц. Сидоров П.К."
                     },
                     {
                         "time": "13:30 - 15:00",
                         "name": "Базы данных",
-                        "type": "lab",
                         "room": "Компьютерный класс 210",
                         "teacher": "Ст. преп. Кузнецов М.П."
                     }
@@ -264,14 +298,12 @@
                     {
                         "time": "09:00 - 10:30",
                         "name": "Архитектура ЭВМ",
-                        "type": "lecture",
                         "room": "Аудитория 215",
                         "teacher": "Проф. Петрова С.И."
                     },
                     {
                         "time": "10:45 - 12:15",
                         "name": "Веб-технологии",
-                        "type": "practice",
                         "room": "Компьютерный класс 312",
                         "teacher": "Доц. Смирнов А.А."
                     }
@@ -280,21 +312,18 @@
                     {
                         "time": "09:00 - 10:30",
                         "name": "Иностранный язык",
-                        "type": "practice",
                         "room": "Аудитория 102",
                         "teacher": "Преп. Козлова Е.В."
                     },
                     {
                         "time": "10:45 - 12:15",
                         "name": "Сети и коммуникации",
-                        "type": "lecture",
                         "room": "Аудитория 315",
                         "teacher": "Проф. Васильев И.С."
                     },
                     {
                         "time": "13:30 - 15:00",
                         "name": "Физкультура",
-                        "type": "practice",
                         "room": "Спортивный зал",
                         "teacher": "Преп. Орлов Д.Н."
                     }
@@ -303,14 +332,12 @@
                     {
                         "time": "09:00 - 10:30",
                         "name": "Алгоритмы и структуры данных",
-                        "type": "lecture",
                         "room": "Аудитория 108",
                         "teacher": "Проф. Николаев С.П."
                     },
                     {
                         "time": "10:45 - 12:15",
                         "name": "Операционные системы",
-                        "type": "lab",
                         "room": "Компьютерный класс 305",
                         "teacher": "Доц. Лебедев А.М."
                     }
@@ -319,14 +346,12 @@
                     {
                         "time": "09:00 - 10:30",
                         "name": "Теория вероятностей",
-                        "type": "lecture",
                         "room": "Аудитория 210",
                         "teacher": "Доц. Соколова О.И."
                     },
                     {
                         "time": "10:45 - 12:15",
                         "name": "Объектно-ориентированное программирование",
-                        "type": "practice",
                         "room": "Компьютерный класс 312",
                         "teacher": "Доц. Смирнов А.А."
                     }
@@ -339,14 +364,12 @@
                     {
                         "time": "09:00 - 10:30",
                         "name": "Дискретная математика",
-                        "type": "lecture",
                         "room": "Аудитория 301",
                         "teacher": "Проф. Иванов А.В."
                     },
                     {
                         "time": "10:45 - 12:15",
                         "name": "Программирование на C++",
-                        "type": "practice",
                         "room": "Компьютерный класс 105",
                         "teacher": "Доц. Сидоров П.К."
                     }
@@ -355,21 +378,18 @@
                     {
                         "time": "09:00 - 10:30",
                         "name": "Компьютерные сети",
-                        "type": "lecture",
                         "room": "Аудитория 215",
                         "teacher": "Проф. Петрова С.И."
                     },
                     {
                         "time": "10:45 - 12:15",
                         "name": "Веб-дизайн",
-                        "type": "practice",
                         "room": "Компьютерный класс 312",
                         "teacher": "Доц. Смирнов А.А."
                     },
                     {
                         "time": "13:30 - 15:00",
                         "name": "Базы данных",
-                        "type": "lab",
                         "room": "Компьютерный класс 210",
                         "teacher": "Ст. преп. Кузнецов М.П."
                     }
@@ -378,14 +398,12 @@
                     {
                         "time": "09:00 - 10:30",
                         "name": "Иностранный язык",
-                        "type": "practice",
                         "room": "Аудитория 102",
                         "teacher": "Преп. Козлова Е.В."
                     },
                     {
                         "time": "10:45 - 12:15",
                         "name": "Криптография",
-                        "type": "lecture",
                         "room": "Аудитория 315",
                         "teacher": "Проф. Васильев И.С."
                     }
@@ -394,14 +412,12 @@
                     {
                         "time": "09:00 - 10:30",
                         "name": "Машинное обучение",
-                        "type": "lecture",
                         "room": "Аудитория 108",
                         "teacher": "Проф. Николаев С.П."
                     },
                     {
                         "time": "10:45 - 12:15",
                         "name": "Операционные системы",
-                        "type": "lab",
                         "room": "Компьютерный класс 305",
                         "teacher": "Доц. Лебедев А.М."
                     }
@@ -410,14 +426,12 @@
                     {
                         "time": "09:00 - 10:30",
                         "name": "Статистика",
-                        "type": "lecture",
                         "room": "Аудитория 210",
                         "teacher": "Доц. Соколова О.И."
                     },
                     {
                         "time": "10:45 - 12:15",
                         "name": "Проектирование ПО",
-                        "type": "practice",
                         "room": "Компьютерный класс 312",
                         "teacher": "Доц. Смирнов А.А."
                     }
@@ -538,7 +552,6 @@
                             <div class="lesson-info">
                                 <div class="lesson-name">${lesson.name}</div>
                                 <div class="lesson-details">
-                                    <span class="lesson-type ${lesson.type}">${getTypeText(lesson.type)}</span>
                                     <span>${lesson.room}</span>
                                     <span>${lesson.teacher}</span>
                                 </div>
@@ -554,18 +567,31 @@
             });
         }
 
-        // Вспомогательная функция для получения текста типа занятия
-        function getTypeText(type) {
-            const typeMap = {
-                'lecture': 'Лекция',
-                'practice': 'Практика',
-                'lab': 'Лабораторная'
-            };
-            return typeMap[type] || type;
+        // Функция для переключения темы
+        function toggleTheme() {
+            const body = document.body;
+            const themeToggle = document.getElementById('themeToggle');
+            
+            if (body.classList.contains('dark-theme')) {
+                body.classList.remove('dark-theme');
+                themeToggle.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.classList.add('dark-theme');
+                themeToggle.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
         }
 
         // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', function() {
+            // Проверяем сохраненную тему
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+                document.getElementById('themeToggle').textContent = '☀️';
+            }
+            
             // Отображаем расписание текущей недели
             renderSchedule(currentWeekOffset);
             
@@ -584,6 +610,9 @@
                 currentWeekOffset++;
                 renderSchedule(currentWeekOffset);
             });
+            
+            // Назначаем обработчик для переключателя темы
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
         });
     </script>
 </body>
