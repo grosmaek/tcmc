@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -217,25 +216,52 @@
             font-style: italic;
         }
 
+        .lesson-changed {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+
+        .dark-theme .lesson-changed {
+            background-color: #5c4d1e;
+            border-left-color: #ffc107;
+        }
+
+        .change-indicator {
+            display: inline-flex;
+            align-items: center;
+            background-color: #ffc107;
+            color: #856404;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+            font-weight: normal;
+        }
+
+        .dark-theme .change-indicator {
+            background-color: #ffc107;
+            color: #000;
+        }
+
         @media (max-width: 768px) {
             .week-selector {
                 flex-direction: column;
                 gap: 15px;
             }
-
+            
             .lesson {
                 flex-direction: column;
             }
-
+            
             .lesson-time {
                 margin-bottom: 5px;
             }
-
+            
             .lesson-details {
                 flex-direction: column;
                 gap: 5px;
             }
-
+            
             .theme-toggle {
                 position: static;
                 margin-top: 10px;
@@ -243,7 +269,6 @@
         }
     </style>
 </head>
-
 <body>
     <div class="container">
         <header>
@@ -268,273 +293,9 @@
     </div>
 
     <script>
-        // База данных расписания в формате JSON
-        const scheduleData = {
-            "numerator": {
-                "monday": [
-                    {
-                        "time": "09:00 - 10:35",
-                        "name": "Информатика",
-                        "room": "Аудитория 506",
-                        "teacher": "Шадрин И.Н."
-                    },
-                    {
-                        "time": "11:10 - 12:45",
-                        "name": "Иностранный язык",
-                        "room": "Аудитория 607",
-                        "teacher": "Ившина Я.М."
-                    },
-                    {
-                        "time": "12:55 - 14:30",
-                        "name": "Биология",
-                        "room": "Аудитория 608",
-                        "teacher": "Баева И.Г."
-                    },
-                    {
-                        "time": "14:40 - 16:15",
-                        "name": "География",
-                        "room": "Аудитория 718",
-                        "teacher": "Евстафьева В.А."
-                    }
-                ],
-                "tuesday": [
-                    {
-                        "time": "09:00 - 10:35",
-                        "name": "Химия",
-                        "room": "Аудитория 601",
-                        "teacher": "Андриенко Т.В."
-                    },
-                    {
-                        "time": "11:10 - 12:45",
-                        "name": "Литература",
-                        "room": "Аудитория 520",
-                        "teacher": "Ежова А.С."
-                    }
-                ],
-                "wednesday": [
-                    {
-                        "time": "09:00 - 10:35",
-                        "name": "——",
-                        "room": "",
-                        "teacher": ""
-                    },
-                    {
-                        "time": "11:10 - 12:45",
-                        "name": "Математика",
-                        "room": "Аудитория 514",
-                        "teacher": "Романова Л.А."
-                    },
-                    {
-                        "time": "12:55 - 14:30",
-                        "name": "Обществознание",
-                        "room": "Аудитория 616",
-                        "teacher": "Анищенко А.Ю."
-                    },
-                    {
-                        "time": "14:40 - 16:15",
-                        "name": "Математика",
-                        "room": "Аудитория 514",
-                        "teacher": "Романова Л.А."
-                    }
-                ],
-                "thursday": [
-                    {
-                        "time": "09:00 - 10:35",
-                        "name": "Литература",
-                        "room": "Аудитория 520",
-                        "teacher": "Ежова А.С."
-                    },
-                    {
-                        "time": "11:10 - 12:45",
-                        "name": "Физика",
-                        "room": "Аудитория 609",
-                        "teacher": "Фролова Е.В."
-                    },
-                    {
-                        "time": "12:55 - 14:30",
-                        "name": "История",
-                        "room": "Аудитория 616",
-                        "teacher": "Анищенко А.Ю."
-                    }
-                ],
-                "friday": [
-                    {
-                        "time": "09:00 - 10:35",
-                        "name": "Русский язык",
-                        "room": "Аудитория 424",
-                        "teacher": "Плиско Е.С."
-                    },
-                    {
-                        "time": "11:10 - 12:45",
-                        "name": "Математика",
-                        "room": "Аудитория 514",
-                        "teacher": "Романова Л.А."
-                    },
-                    {
-                        "time": "12:55 - 14:30",
-                        "name": "Физическая культура",
-                        "room": "Спортивный зал",
-                        "teacher": "Дмитриев В.В."
-                    }
-                ],
-                "saturday": [
-                    {
-                        "time": "09:00 - 10:35",
-                        "name": "Основы безопасности и защиты Родины",
-                        "room": "Аудитория 505",
-                        "teacher": "Осипов Д.Л."
-                    },
-                    {
-                        "time": "11:10 - 12:45",
-                        "name": "Физика",
-                        "room": "Аудитория 609",
-                        "teacher": "Фролова Е.В."
-                    },
-                    {
-                        "time": "12:55 - 14:30",
-                        "name": "Информатика",
-                        "room": "Бриф-зона (3 этаж)",
-                        "teacher": "Шадрин И.Н."
-                    }
-                ],
-                "sunday": []
-            },
-            "denominator": {
-                "monday": [
-                    {
-                        "time": "09:00 - 10:35",
-                        "name": "Информатика",
-                        "room": "Аудитория 506",
-                        "teacher": "Шадрин И.Н."
-                    },
-                    {
-                        "time": "11:10 - 12:45",
-                        "name": "Иностранный язык",
-                        "room": "Аудитория 607",
-                        "teacher": "Ившина Я.М."
-                    },
-                    {
-                        "time": "12:55 - 14:30",
-                        "name": "Биология",
-                        "room": "Аудитория 608",
-                        "teacher": "Баева И.Г."
-                    },
-                    {
-                        "time": "14:40 - 16:15",
-                        "name": "География",
-                        "room": "Аудитория 718",
-                        "teacher": "Евстафьева В.А."
-                    }
-                ],
-                "tuesday": [
-                    {
-                        "time": "09:00 - 10:35",
-                        "name": "Химия",
-                        "room": "Аудитория 601",
-                        "teacher": "Андриенко Т.В."
-                    },
-                    {
-                        "time": "11:10 - 12:45",
-                        "name": "Литература",
-                        "room": "Аудитория 520",
-                        "teacher": "Ежова А.С."
-                    }
-                ],
-                "wednesday": [
-                    {
-                        "time": "09:00 - 10:35",
-                        "name": "——",
-                        "room": "",
-                        "teacher": ""
-                    },
-                    {
-                        "time": "11:10 - 12:45",
-                        "name": "Математика",
-                        "room": "Аудитория 514",
-                        "teacher": "Романова Л.А."
-                    },
-                    {
-                        "time": "12:55 - 14:30",
-                        "name": "Обществознание",
-                        "room": "Аудитория 616",
-                        "teacher": "Анищенко А.Ю."
-                    },
-                    {
-                        "time": "14:40 - 16:15",
-                        "name": "Русский язык",
-                        "room": "Аудитория 424",
-                        "teacher": "Плиско Е.С."
-                    }
-                ],
-                "thursday": [
-                    {
-                        "time": "09:00 - 10:35",
-                        "name": "——",
-                        "room": "",
-                        "teacher": ""
-                    },
-                    {
-                        "time": "11:10 - 12:45",
-                        "name": "Физика",
-                        "room": "Аудитория 609",
-                        "teacher": "Фролова Е.В."
-                    },
-                    {
-                        "time": "12:55 - 14:30",
-                        "name": "История",
-                        "room": "Аудитория 616",
-                        "teacher": "Анищенко А.Ю."
-                    },
-                    {
-                        "time": "14:40 - 16:15",
-                        "name": "Основы проектной деятельности",
-                        "room": "Аудитория 622",
-                        "teacher": "Лазуткина Н.С."
-                    }
-                ],
-                "friday": [
-                    {
-                        "time": "09:00 - 10:35",
-                        "name": "Русский язык",
-                        "room": "Аудитория 424",
-                        "teacher": "Плиско Е.С."
-                    },
-                    {
-                        "time": "11:10 - 12:45",
-                        "name": "Математика",
-                        "room": "Аудитория 514",
-                        "teacher": "Романова Л.А."
-                    },
-                    {
-                        "time": "12:55 - 14:30",
-                        "name": "Физическая культура",
-                        "room": "Спортивный зал",
-                        "teacher": "Дмитриев В.В."
-                    }
-                ],
-                "saturday": [
-                    {
-                        "time": "09:00 - 10:35",
-                        "name": "Основы безопасности и защиты Родины",
-                        "room": "Аудитория 505",
-                        "teacher": "Осипов Д.Л."
-                    },
-                    {
-                        "time": "11:10 - 12:45",
-                        "name": "Физика",
-                        "room": "Аудитория 609",
-                        "teacher": "Фролова Е.В."
-                    },
-                    {
-                        "time": "12:55 - 14:30",
-                        "name": "Информатика",
-                        "room": "Бриф-зона (3 этаж)",
-                        "teacher": "Шадрин И.Н."
-                    }
-                ],
-                "sunday": []
-            }
-        };
+        // Глобальные переменные для данных
+        let baseSchedule = {};
+        let replacements = {};
 
         // Названия дней недели на русском
         const dayNames = {
@@ -550,166 +311,265 @@
         // Текущая дата и смещение недели
         let currentWeekOffset = 0;
 
-        // Функция для определения текущей недели (числитель/знаменатель)
-        function getCurrentWeekType(date = new Date()) {
-            const startDate = new Date('2024-09-02'); // Дата начала учебного года (понедельник)
-            const today = date;
-
-            // Вычисляем разницу в неделях
-            const timeDiff = today - startDate;
-            const weeksDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24 * 7));
-
-            // Четная неделя = числитель, нечетная = знаменатель
-            return weeksDiff % 2 === 0 ? 'numerator' : 'denominator';
-        }
-
-        // Функция для получения дат текущей недели (пн-вс)
-        function getCurrentWeekDates(offset = 0) {
-            const now = new Date();
-            const currentDay = now.getDay(); // 0 - воскресенье, 1 - понедельник, ...
-
-            // Вычисляем понедельник текущей недели
-            const monday = new Date(now);
-            monday.setDate(now.getDate() - (currentDay === 0 ? 6 : currentDay - 1));
-
-            // Применяем смещение недели
-            monday.setDate(monday.getDate() + (offset * 7));
-
-            // Создаем массив дат недели
-            const weekDates = [];
-            for (let i = 0; i < 7; i++) {
-                const date = new Date(monday);
-                date.setDate(monday.getDate() + i);
-                weekDates.push(date);
-            }
-
-            return weekDates;
-        }
-
-        // Функция для форматирования даты
-        function formatDate(date) {
-            const options = { day: 'numeric', month: 'long', year: 'numeric' };
-            return date.toLocaleDateString('ru-RU', options);
-        }
-
-        // Функция для форматирования даты для заголовка недели
-        function formatWeekRange(dates) {
-            const first = dates[0];
-            const last = dates[6];
-            return `${formatDate(first)} - ${formatDate(last)}`;
-        }
-
-        // Функция для отображения расписания
-        function renderSchedule(weekOffset = 0) {
-            const scheduleElement = document.getElementById('schedule');
-            const weekDates = getCurrentWeekDates(weekOffset);
-            const weekType = getCurrentWeekType(weekDates[0]); // Определяем тип недели по понедельнику
-            const weekData = scheduleData[weekType];
-
-            // Очищаем контейнер расписания
-            scheduleElement.innerHTML = '';
-
-            // Обновляем заголовок недели
-            const weekRangeElement = document.getElementById('week-range');
-            weekRangeElement.innerHTML = `${formatWeekRange(weekDates)} <span class="week-type ${weekType === 'numerator' ? 'numerator' : 'denominator'}" id="week-type">${weekType === 'numerator' ? 'числитель' : 'знаменатель'}</span>`;
-
-            // Создаем HTML для каждого дня
-            const dayKeys = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-
-            dayKeys.forEach((dayKey, index) => {
-                const dayElement = document.createElement('div');
-                const date = weekDates[index];
-
-                // Заголовок дня
-                const dayHeader = document.createElement('div');
-                dayHeader.className = 'day-header';
-                dayHeader.textContent = `${dayNames[dayKey]}, ${formatDate(date)}`;
-                dayElement.appendChild(dayHeader);
-
-                // Список занятий
-                const lessonsList = document.createElement('div');
-                lessonsList.className = 'lessons-list';
-
-                const lessons = weekData[dayKey] || [];
-
-                if (lessons.length === 0) {
-                    const emptyDay = document.createElement('div');
-                    emptyDay.className = 'empty-day';
-                    emptyDay.textContent = 'Занятий нет';
-                    lessonsList.appendChild(emptyDay);
-                } else {
-                    lessons.forEach(lesson => {
-                        const lessonElement = document.createElement('div');
-                        lessonElement.className = 'lesson';
-
-                        lessonElement.innerHTML = `
-                            <div class="lesson-time">${lesson.time}</div>
-                            <div class="lesson-info">
-                                <div class="lesson-name">${lesson.name}</div>
-                                <div class="lesson-details">
-                                    <span>${lesson.room}</span>
-                                    <span>${lesson.teacher}</span>
-                                </div>
-                            </div>
-                        `;
-
-                        lessonsList.appendChild(lessonElement);
-                    });
-                }
-
-                dayElement.appendChild(lessonsList);
-                scheduleElement.appendChild(dayElement);
-            });
-        }
-
-        // Функция для переключения темы
-        function toggleTheme() {
-            const body = document.body;
-            const themeToggle = document.getElementById('themeToggle');
-
-            if (body.classList.contains('dark-theme')) {
-                body.classList.remove('dark-theme');
-                themeToggle.textContent = '🌙';
-                localStorage.setItem('theme', 'light');
-            } else {
-                body.classList.add('dark-theme');
-                themeToggle.textContent = '☀️';
-                localStorage.setItem('theme', 'dark');
-            }
-        }
-
-        // Инициализация при загрузке страницы
-        document.addEventListener('DOMContentLoaded', function () {
-            // Проверяем сохраненную тему
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.body.classList.add('dark-theme');
-                document.getElementById('themeToggle').textContent = '☀️';
-            }
-
-            // Отображаем расписание текущей недели
-            renderSchedule(currentWeekOffset);
-
-            // Назначаем обработчики для кнопок
-            document.getElementById('prev-week').addEventListener('click', function () {
-                currentWeekOffset--;
+        // Загрузка данных из JSON файлов
+        async function loadData() {
+            try {
+                // Загружаем основное расписание
+                const baseResponse = await fetch('base_schedule.json');
+                baseSchedule = await baseResponse.json();
+                
+                // Загружаем замены
+                const replacementsResponse = await fetch('replacements.json');
+                replacements = await replacementsResponse.json();
+                
+                // Отображаем расписание
                 renderSchedule(currentWeekOffset);
-            });
-
-            document.getElementById('current-week').addEventListener('click', function () {
-                currentWeekOffset = 0;
-                renderSchedule(currentWeekOffset);
-            });
-
-            document.getElementById('next-week').addEventListener('click', function () {
-                currentWeekOffset++;
-                renderSchedule(currentWeekOffset);
-            });
-
-            // Назначаем обработчик для переключателя темы
-            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
-        });
-    </script>
-</body>
-
-</html>
+            } catch (error) {
+                console.error('Ошибка загрузки данных:', error);
+                // Используем встроенное расписание как запасной вариант
+                baseSchedule = {
+                    "numerator": {
+                        "monday": [
+                            {
+                                "time": "09:00 - 10:35",
+                                "name": "Информатика",
+                                "room": "Аудитория 506",
+                                "teacher": "Шадрин И.Н."
+                            },
+                            {
+                                "time": "11:10 - 12:45",
+                                "name": "Иностранный язык",
+                                "room": "Аудитория 607",
+                                "teacher": "Ившина Я.М."
+                            },
+                            {
+                                "time": "12:55 - 14:30",
+                                "name": "Биология",
+                                "room": "Аудитория 608",
+                                "teacher": "Баева И.Г."
+                            },
+                            {
+                                "time": "14:40 - 16:15",
+                                "name": "География",
+                                "room": "Аудитория 718",
+                                "teacher": "Евстафьева В.А."
+                            }
+                        ],
+                        "tuesday": [
+                            {
+                                "time": "09:00 - 10:35",
+                                "name": "Химия",
+                                "room": "Аудитория 601",
+                                "teacher": "Андриенко Т.В."
+                            },
+                            {
+                                "time": "11:10 - 12:45",
+                                "name": "Литература",
+                                "room": "Аудитория 520",
+                                "teacher": "Ежова А.С."
+                            }
+                        ],
+                        "wednesday": [
+                            {
+                                "time": "09:00 - 10:35",
+                                "name": "——",
+                                "room": "",
+                                "teacher": ""
+                            },
+                            {
+                                "time": "11:10 - 12:45",
+                                "name": "Математика",
+                                "room": "Аудитория 514",
+                                "teacher": "Романова Л.А."
+                            },
+                            {
+                                "time": "12:55 - 14:30",
+                                "name": "Обществознание",
+                                "room": "Аудитория 616",
+                                "teacher": "Анищенко А.Ю."
+                            },
+                            {
+                                "time": "14:40 - 16:15",
+                                "name": "Математика",
+                                "room": "Аудитория 514",
+                                "teacher": "Романова Л.А."
+                            }
+                        ],
+                        "thursday": [
+                            {
+                                "time": "09:00 - 10:35",
+                                "name": "Литература",
+                                "room": "Аудитория 520",
+                                "teacher": "Ежова А.С."
+                            },
+                            {
+                                "time": "11:10 - 12:45",
+                                "name": "Физика",
+                                "room": "Аудитория 609",
+                                "teacher": "Фролова Е.В."
+                            },
+                            {
+                                "time": "12:55 - 14:30",
+                                "name": "История",
+                                "room": "Аудитория 616",
+                                "teacher": "Анищенко А.Ю."
+                            }
+                        ],
+                        "friday": [
+                            {
+                                "time": "09:00 - 10:35",
+                                "name": "Русский язык",
+                                "room": "Аудитория 424",
+                                "teacher": "Плиско Е.С."
+                            },
+                            {
+                                "time": "11:10 - 12:45",
+                                "name": "Математика",
+                                "room": "Аудитория 514",
+                                "teacher": "Романова Л.А."
+                            },
+                            {
+                                "time": "12:55 - 14:30",
+                                "name": "Физическая культура",
+                                "room": "Спортивный зал",
+                                "teacher": "Дмитриев В.В."
+                            }
+                        ],
+                        "saturday": [
+                            {
+                                "time": "09:00 - 10:35",
+                                "name": "Основы безопасности и защиты Родины",
+                                "room": "Аудитория 505",
+                                "teacher": "Осипов Д.Л."
+                            },
+                            {
+                                "time": "11:10 - 12:45",
+                                "name": "Физика",
+                                "room": "Аудитория 609",
+                                "teacher": "Фролова Е.В."
+                            },
+                            {
+                                "time": "12:55 - 14:30",
+                                "name": "Информатика",
+                                "room": "Бриф-зона (3 этаж)",
+                                "teacher": "Шадрин И.Н."
+                            }
+                        ],
+                        "sunday": []
+                    },
+                    "denominator": {
+                        "monday": [
+                            {
+                                "time": "09:00 - 10:35",
+                                "name": "Информатика",
+                                "room": "Аудитория 506",
+                                "teacher": "Шадрин И.Н."
+                            },
+                            {
+                                "time": "11:10 - 12:45",
+                                "name": "Иностранный язык",
+                                "room": "Аудитория 607",
+                                "teacher": "Ившина Я.М."
+                            },
+                            {
+                                "time": "12:55 - 14:30",
+                                "name": "Биология",
+                                "room": "Аудитория 608",
+                                "teacher": "Баева И.Г."
+                            },
+                            {
+                                "time": "14:40 - 16:15",
+                                "name": "География",
+                                "room": "Аудитория 718",
+                                "teacher": "Евстафьева В.А."
+                            }
+                        ],
+                        "tuesday": [
+                            {
+                                "time": "09:00 - 10:35",
+                                "name": "Химия",
+                                "room": "Аудитория 601",
+                                "teacher": "Андриенко Т.В."
+                            },
+                            {
+                                "time": "11:10 - 12:45",
+                                "name": "Литература",
+                                "room": "Аудитория 520",
+                                "teacher": "Ежова А.С."
+                            }
+                        ],
+                        "wednesday": [
+                            {
+                                "time": "09:00 - 10:35",
+                                "name": "——",
+                                "room": "",
+                                "teacher": ""
+                            },
+                            {
+                                "time": "11:10 - 12:45",
+                                "name": "Математика",
+                                "room": "Аудитория 514",
+                                "teacher": "Романова Л.А."
+                            },
+                            {
+                                "time": "12:55 - 14:30",
+                                "name": "Обществознание",
+                                "room": "Аудитория 616",
+                                "teacher": "Анищенко А.Ю."
+                            },
+                            {
+                                "time": "14:40 - 16:15",
+                                "name": "Русский язык",
+                                "room": "Аудитория 424",
+                                "teacher": "Плиско Е.С."
+                            }
+                        ],
+                        "thursday": [
+                            {
+                                "time": "09:00 - 10:35",
+                                "name": "——",
+                                "room": "",
+                                "teacher": ""
+                            },
+                            {
+                                "time": "11:10 - 12:45",
+                                "name": "Физика",
+                                "room": "Аудитория 609",
+                                "teacher": "Фролова Е.В."
+                            },
+                            {
+                                "time": "12:55 - 14:30",
+                                "name": "История",
+                                "room": "Аудитория 616",
+                                "teacher": "Анищенко А.Ю."
+                            },
+                            {
+                                "time": "14:40 - 16:15",
+                                "name": "Основы проектной деятельности",
+                                "room": "Аудитория 622",
+                                "teacher": "Лазуткина Н.С."
+                            }
+                        ],
+                        "friday": [
+                            {
+                                "time": "09:00 - 10:35",
+                                "name": "Русский язык",
+                                "room": "Аудитория 424",
+                                "teacher": "Плиско Е.С."
+                            },
+                            {
+                                "time": "11:10 - 12:45",
+                                "name": "Математика",
+                                "room": "Аудитория 514",
+                                "teacher": "Романова Л.А."
+                            },
+                            {
+                                "time": "12:55 - 14:30",
+                                "name": "Физическая культура",
+                                "room": "Спортивный зал",
+                                "teacher": "Дмитриев В.В."
+                            }
+                        ],
+                        "saturday": [
+                            {
+                            
