@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Расписание занятий</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
     <style>
         * {
             margin: 0;
@@ -248,27 +251,39 @@
                 flex-direction: column;
                 gap: 15px;
             }
-            
+
             .lesson {
                 flex-direction: column;
             }
-            
+
             .lesson-time {
                 margin-bottom: 5px;
             }
-            
+
             .lesson-details {
                 flex-direction: column;
                 gap: 5px;
             }
-            
+
             .theme-toggle {
                 position: static;
                 margin-top: 10px;
             }
         }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .material-icons {
+            font-size: 16px;
+            opacity: 0.7;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -317,11 +332,11 @@
                 // Загружаем основное расписание
                 const baseResponse = await fetch('base_schedule.json');
                 baseSchedule = await baseResponse.json();
-                
+
                 // Загружаем замены
                 const replacementsResponse = await fetch('replacements.json');
                 replacements = await replacementsResponse.json();
-                
+
                 // Отображаем расписание
                 renderSchedule(currentWeekOffset);
             } catch (error) {
@@ -602,11 +617,11 @@
         function getCurrentWeekType(date = new Date()) {
             const startDate = new Date('2024-09-02'); // Дата начала учебного года (понедельник)
             const today = date;
-            
+
             // Вычисляем разницу в неделях
             const timeDiff = today - startDate;
             const weeksDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24 * 7));
-            
+
             // Четная неделя = числитель, нечетная = знаменатель
             return weeksDiff % 2 === 0 ? 'numerator' : 'denominator';
         }
@@ -615,14 +630,14 @@
         function getCurrentWeekDates(offset = 0) {
             const now = new Date();
             const currentDay = now.getDay(); // 0 - воскресенье, 1 - понедельник, ...
-            
+
             // Вычисляем понедельник текущей недели
             const monday = new Date(now);
             monday.setDate(now.getDate() - (currentDay === 0 ? 6 : currentDay - 1));
-            
+
             // Применяем смещение недели
             monday.setDate(monday.getDate() + (offset * 7));
-            
+
             // Создаем массив дат недели
             const weekDates = [];
             for (let i = 0; i < 7; i++) {
@@ -630,7 +645,7 @@
                 date.setDate(monday.getDate() + i);
                 weekDates.push(date);
             }
-            
+
             return weekDates;
         }
 
@@ -650,22 +665,22 @@
         // Функция для получения расписания с учетом замен
         function getScheduleWithReplacements(weekType, dayKey, date) {
             const dateKey = date.toISOString().split('T')[0]; // YYYY-MM-DD
-            
+
             // Получаем базовое расписание для дня
             const baseLessons = baseSchedule[weekType]?.[dayKey] || [];
-            
+
             // Проверяем, есть ли замены для этой даты
             const dayReplacements = replacements[dateKey] || {};
-            
+
             // Если замен нет, возвращаем базовое расписание
             if (Object.keys(dayReplacements).length === 0) {
                 return baseLessons.map(lesson => ({ ...lesson, changed: false }));
             }
-            
+
             // Применяем замены
             const updatedLessons = [...baseLessons];
             const changedLessons = new Set();
-            
+
             // Заменяем занятия согласно replacements
             Object.keys(dayReplacements).forEach(index => {
                 const lessonIndex = parseInt(index);
@@ -681,7 +696,7 @@
                     }
                 }
             });
-            
+
             // Фильтруем удаленные занятия (null значения) и добавляем флаг changed
             return updatedLessons
                 .filter(lesson => lesson !== null)
@@ -696,33 +711,33 @@
             const scheduleElement = document.getElementById('schedule');
             const weekDates = getCurrentWeekDates(weekOffset);
             const weekType = getCurrentWeekType(weekDates[0]); // Определяем тип недели по понедельнику
-            
+
             // Очищаем контейнер расписания
             scheduleElement.innerHTML = '';
-            
+
             // Обновляем заголовок недели
             const weekRangeElement = document.getElementById('week-range');
             weekRangeElement.innerHTML = `${formatWeekRange(weekDates)} <span class="week-type ${weekType === 'numerator' ? 'numerator' : 'denominator'}" id="week-type">${weekType === 'numerator' ? 'числитель' : 'знаменатель'}</span>`;
-            
+
             // Создаем HTML для каждого дня
             const dayKeys = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-            
+
             dayKeys.forEach((dayKey, index) => {
                 const dayElement = document.createElement('div');
                 const date = weekDates[index];
-                
+
                 // Заголовок дня
                 const dayHeader = document.createElement('div');
                 dayHeader.className = 'day-header';
                 dayHeader.textContent = `${dayNames[dayKey]}, ${formatDate(date)}`;
                 dayElement.appendChild(dayHeader);
-                
+
                 // Список занятий
                 const lessonsList = document.createElement('div');
                 lessonsList.className = 'lessons-list';
-                
+
                 const lessons = getScheduleWithReplacements(weekType, dayKey, date);
-                
+
                 if (lessons.length === 0) {
                     const emptyDay = document.createElement('div');
                     emptyDay.className = 'empty-day';
@@ -732,25 +747,31 @@
                     lessons.forEach(lesson => {
                         const lessonElement = document.createElement('div');
                         lessonElement.className = `lesson ${lesson.changed ? 'lesson-changed' : ''}`;
-                        
-                        const changeIndicator = lesson.changed ? 
-                            `<span class="change-indicator">⚠️ Изменено</span>` : '';
-                        
+
+                        const changeIndicator = lesson.changed ?
+                            `<span class="change-indicator">Изменено</span>` : '';
+
                         lessonElement.innerHTML = `
-                            <div class="lesson-time">${lesson.time}</div>
-                            <div class="lesson-info">
-                                <div class="lesson-name">${lesson.name}${changeIndicator}</div>
-                                <div class="lesson-details">
-                                    <span>${lesson.room}</span>
-                                    <span>${lesson.teacher}</span>
-                                </div>
-                            </div>
-                        `;
-                        
+    <div class="lesson-time">${lesson.time}</div>
+    <div class="lesson-info">
+        <div class="lesson-name">${lesson.name}${changeIndicator}</div>
+        <div class="lesson-details">
+            <div class="detail-item">
+                <span class="material-icons">location_on</span>
+                <span>${lesson.room}</span>
+            </div>
+            <div class="detail-item">
+                <span class="material-icons">person</span>
+                <span>${lesson.teacher}</span>
+            </div>
+        </div>
+    </div>
+`;
+
                         lessonsList.appendChild(lessonElement);
                     });
                 }
-                
+
                 dayElement.appendChild(lessonsList);
                 scheduleElement.appendChild(dayElement);
             });
@@ -760,7 +781,7 @@
         function toggleTheme() {
             const body = document.body;
             const themeToggle = document.getElementById('themeToggle');
-            
+
             if (body.classList.contains('dark-theme')) {
                 body.classList.remove('dark-theme');
                 themeToggle.textContent = '🌙';
@@ -773,36 +794,37 @@
         }
 
         // Инициализация при загрузке страницы
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Проверяем сохраненную тему
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'dark') {
                 document.body.classList.add('dark-theme');
                 document.getElementById('themeToggle').textContent = '☀️';
             }
-            
+
             // Загружаем данные и отображаем расписание
             loadData();
-            
+
             // Назначаем обработчики для кнопок
-            document.getElementById('prev-week').addEventListener('click', function() {
+            document.getElementById('prev-week').addEventListener('click', function () {
                 currentWeekOffset--;
                 renderSchedule(currentWeekOffset);
             });
-            
-            document.getElementById('current-week').addEventListener('click', function() {
+
+            document.getElementById('current-week').addEventListener('click', function () {
                 currentWeekOffset = 0;
                 renderSchedule(currentWeekOffset);
             });
-            
-            document.getElementById('next-week').addEventListener('click', function() {
+
+            document.getElementById('next-week').addEventListener('click', function () {
                 currentWeekOffset++;
                 renderSchedule(currentWeekOffset);
             });
-            
+
             // Назначаем обработчик для переключателя темы
             document.getElementById('themeToggle').addEventListener('click', toggleTheme);
         });
     </script>
 </body>
+
 </html>
