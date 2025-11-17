@@ -657,48 +657,53 @@
         }
 
         // Функция для получения расписания с учетом замен
-        function getScheduleWithReplacements(weekType, dayKey, date) {
-            const dateKey = date.toISOString().split('T')[0]; // YYYY-MM-DD
-
-            // Получаем базовое расписание для дня
-            const baseLessons = baseSchedule[weekType]?.[dayKey] || [];
-
-            // Проверяем, есть ли замены для этой даты
-            const dayReplacements = replacements[dateKey] || {};
-
-            // Если замен нет, возвращаем базовое расписание
-            if (Object.keys(dayReplacements).length === 0) {
-                return baseLessons.map(lesson => ({ ...lesson, changed: false }));
-            }
-
-            // Применяем замены
-            const updatedLessons = [...baseLessons];
-            const changedLessons = new Set();
-
-            // Заменяем занятия согласно replacements
-            Object.keys(dayReplacements).forEach(index => {
-                const lessonIndex = parseInt(index);
-                if (lessonIndex >= 0 && lessonIndex < updatedLessons.length) {
-                    // Если значение null - удаляем занятие
-                    if (dayReplacements[index] === null) {
-                        updatedLessons[lessonIndex] = null;
-                        changedLessons.add(lessonIndex);
-                    } else {
-                        // Иначе заменяем занятие
-                        updatedLessons[lessonIndex] = { ...dayReplacements[index], changed: true };
-                        changedLessons.add(lessonIndex);
-                    }
-                }
-            });
-
-            // Фильтруем удаленные занятия (null значения) и добавляем флаг changed
-            return updatedLessons
-                .filter(lesson => lesson !== null)
-                .map((lesson, index) => ({
-                    ...lesson,
-                    changed: lesson.changed || changedLessons.has(index)
-                }));
+// Функция для получения расписания с учетом замен
+function getScheduleWithReplacements(weekType, dayKey, date) {
+    const dateKey = date.toISOString().split('T')[0]; // YYYY-MM-DD
+    
+    // Получаем базовое расписание для дня
+    const baseLessons = baseSchedule[weekType]?.[dayKey] || [];
+    
+    // Проверяем, есть ли замены для этой даты
+    const dayReplacements = replacements[dateKey] || {};
+    
+    // Если замен нет, возвращаем базовое расписание
+    if (Object.keys(dayReplacements).length === 0) {
+        return baseLessons.map(lesson => ({ ...lesson, changed: false }));
+    }
+    
+    // Создаем копию базового расписания
+    let updatedLessons = [...baseLessons];
+    const changedLessons = new Set();
+    
+    // Применяем замены
+    Object.keys(dayReplacements).forEach(indexStr => {
+        const index = parseInt(indexStr);
+        
+        // Если индекс выходит за пределы текущего расписания, расширяем массив
+        while (index >= updatedLessons.length) {
+            updatedLessons.push(null);
         }
+        
+        // Если значение null - удаляем занятие
+        if (dayReplacements[indexStr] === null) {
+            updatedLessons[index] = null;
+            changedLessons.add(index);
+        } else {
+            // Иначе заменяем или добавляем занятие
+            updatedLessons[index] = { ...dayReplacements[indexStr], changed: true };
+            changedLessons.add(index);
+        }
+    });
+    
+    // Фильтруем удаленные занятия (null значения) и добавляем флаг changed
+    return updatedLessons
+        .filter(lesson => lesson !== null)
+        .map((lesson, index) => ({
+            ...lesson,
+            changed: lesson.changed || changedLessons.has(index)
+        }));
+}
 
         // Функция для отображения расписания
         function renderSchedule(weekOffset = 0) {
