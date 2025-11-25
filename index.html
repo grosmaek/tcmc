@@ -658,6 +658,7 @@
 
         // Функция для получения расписания с учетом замен
 // Функция для получения расписания с учетом замен
+// Функция для получения расписания с учетом замен
 function getScheduleWithReplacements(weekType, dayKey, date) {
     const dateKey = date.toISOString().split('T')[0]; // YYYY-MM-DD
     
@@ -672,37 +673,52 @@ function getScheduleWithReplacements(weekType, dayKey, date) {
         return baseLessons.map(lesson => ({ ...lesson, changed: false }));
     }
     
-    // Создаем копию базового расписания
-    let updatedLessons = [...baseLessons];
-    const changedLessons = new Set();
+    // Создаем карту временных слотов
+    const timeSlots = {
+        "09:00 - 10:35": null, // 1 пара
+        "11:10 - 12:45": null, // 2 пара
+        "12:55 - 14:30": null, // 3 пара
+        "14:40 - 16:15": null  // 4 пара
+    };
     
-    // Применяем замены
-    Object.keys(dayReplacements).forEach(indexStr => {
-        const index = parseInt(indexStr);
-        
-        // Если индекс выходит за пределы текущего расписания, расширяем массив
-        while (index >= updatedLessons.length) {
-            updatedLessons.push(null);
-        }
-        
-        // Если значение null - удаляем занятие
-        if (dayReplacements[indexStr] === null) {
-            updatedLessons[index] = null;
-            changedLessons.add(index);
-        } else {
-            // Иначе заменяем или добавляем занятие
-            updatedLessons[index] = { ...dayReplacements[indexStr], changed: true };
-            changedLessons.add(index);
+    // Заполняем временные слоты из базового расписания
+    baseLessons.forEach(lesson => {
+        if (timeSlots.hasOwnProperty(lesson.time)) {
+            timeSlots[lesson.time] = { ...lesson, changed: false };
         }
     });
     
-    // Фильтруем удаленные занятия (null значения) и добавляем флаг changed
-    return updatedLessons
-        .filter(lesson => lesson !== null)
-        .map((lesson, index) => ({
-            ...lesson,
-            changed: lesson.changed || changedLessons.has(index)
-        }));
+    // Применяем замены
+    Object.keys(dayReplacements).forEach(indexStr => {
+        const replacement = dayReplacements[indexStr];
+        
+        if (replacement === null) {
+            // Удаляем пару - находим по индексу в базовом расписании
+            const baseIndex = parseInt(indexStr);
+            if (baseIndex >= 0 && baseIndex < baseLessons.length) {
+                const timeToRemove = baseLessons[baseIndex].time;
+                if (timeSlots.hasOwnProperty(timeToRemove)) {
+                    timeSlots[timeToRemove] = null;
+                }
+            }
+        } else {
+            // Добавляем или заменяем пару
+            if (timeSlots.hasOwnProperty(replacement.time)) {
+                timeSlots[replacement.time] = { ...replacement, changed: true };
+            }
+        }
+    });
+    
+    // Преобразуем обратно в массив и фильтруем null
+    const result = Object.values(timeSlots).filter(lesson => lesson !== null);
+    
+    // Сортируем по времени (на всякий случай)
+    result.sort((a, b) => {
+        const times = ["09:00 - 10:35", "11:10 - 12:45", "12:55 - 14:30", "14:40 - 16:15"];
+        return times.indexOf(a.time) - times.indexOf(b.time);
+    });
+    
+    return result;
 }
 
         // Функция для отображения расписания
